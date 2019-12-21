@@ -19,9 +19,33 @@ def init_driver():
     driver = webdriver.Firefox()
     driver.wait = WebDriverWait(driver, 15)
     return driver
+
+def downloadall(list):
+    suffix=0
+    for url in list: 
+        try:
+            # image.get_attribute('src')
+            response=requests.get(url, stream=True)
+    #       print (response.headers['content-type'])
+        except Exception:
+            if DEBUG:
+                print ("problem getting single image:" + "n=" + str(suffix)+" "+ url)
+        try:
+            extension = response.headers['content-type'].split('/')[-1]
+            if "svg" in extension:
+                raise Exception('undesired extension '+str(extension))
+            f=open('{dirname}/img_{suffixstr}.{extension}'.format(dirname=path, suffixstr="{0:04d}".format(suffix),extension=extension ), 'wb')
+            f.write(response.content)
+            f.close() 
+        except Exception:
+            if DEBUG:
+                print ("rejected dowload ... " + "n=" + str(suffix)+" "+ url)
+        suffix=suffix+1
+
  
- 
-def lookup(driver, query):
+def lookup(driver, query,ntobefetched):
+    urlslist= []
+    urltobescraped="https://www.bing.com/images/search?q="+query+"+&qs=n&form=QBILPG&sp=-1&pq="+query+"+&sc=1-13&ch="+str(ntobefetched)
     driver.get(urltobescraped)
 
     try:
@@ -47,33 +71,16 @@ def lookup(driver, query):
     try:
 #        images = driver.find_elements_by_tag_name('img')
         images = driver.find_elements_by_class_name("mimg");
-        suffix=0
     except Exception:
         print ("unable to find img tag")
     for image in images:
         url=image.get_attribute('src')
         if "https://" in url:
-            try:
-                # image.get_attribute('src')
-                response=requests.get(url, stream=True)
-#                print (response.headers['content-type'])
-            except Exception:
-                if DEBUG:
-                    print ("problem getting single image:" + "n=" + str(suffix)+" "+ url)
-            try:
-                extension = response.headers['content-type'].split('/')[-1]
-                if "svg" in extension:
-                    raise Exception('undesired extension '+str(extension))
-                f=open('{dirname}/img_{suffixstr}.{extension}'.format(dirname=path, suffixstr="{0:04d}".format(suffix),extension=extension ), 'wb')
-                f.write(response.content)
-                f.close() 
-            except Exception:
-                if DEBUG:
-                    print ("rejected dowload ... " + "n=" + str(suffix)+" "+ url)
-            suffix=suffix+1
+            urlslist.append(url)
         else:
             if DEBUG:
                 print ("unacceptable image url " +"n=" + str(suffix)+" "+ url  )
+    return(urlslist) 
 
 def getOptions(args=sys.argv[1:]):
     parser=argparse.ArgumentParser(description='a scraper to collect photo')
@@ -99,9 +106,11 @@ if __name__ == "__main__":
     SCROLL_PAUSE_TIME=float(options.scrollpausetime)
 
     driver = init_driver()
-    urltobescraped="https://www.bing.com/images/search?q="+sestring+"+&qs=n&form=QBILPG&sp=-1&pq="+sestring+"+&sc=1-13&ch="+str(ntobefetched)
 
-    lookup(driver, "Selenium")
+    ul=lookup(driver, sestring, ntobefetched)
+    downloadall(ul) 
+##    for i in ul:
+##        print(i)
     time.sleep(5)
     driver.quit()
 
