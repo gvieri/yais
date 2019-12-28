@@ -42,7 +42,29 @@ def downloadall(list):
                 print ("rejected dowload ... " + "n=" + str(suffix)+" "+ url)
         suffix=suffix+1
 
- 
+##########     customized url scraper
+
+########## image.google.com section 
+
+#### https://www.google.com/search?q=sturmovik&tbm=isch&
+
+########## duckduckgo.com
+
+### https://duckduckgo.com/?q=sturmovik+&t=h_&iax=images&ia=images
+
+########## baidu.com
+### http://image.baidu.com/search/index?tn=baiduimage&ps=1&ct=201326592&lm=-1&cl=2&nc=1&ie=utf-8&word=sturmovik&ie=utf-8&ie=utf-8
+
+########## yandex.com
+### https://yandex.com/images/search?text=sturmovik &
+
+########## picsearch.com
+### https://www.picsearch.com/index.cgi?q=sturmovik
+
+
+
+
+########## 
 def lookup(driver, query,ntobefetched):
     urlslist= []
     urltobescraped="https://www.bing.com/images/search?q="+query+"+&qs=n&form=QBILPG&sp=-1&pq="+query+"+&sc=1-13&ch="+str(ntobefetched)
