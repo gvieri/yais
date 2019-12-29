@@ -51,6 +51,45 @@ def downloadall(list):
 ########## duckduckgo.com
 
 ### https://duckduckgo.com/?q=sturmovik+&t=h_&iax=images&ia=images
+def lookup0(driver, query,ntobefetched):
+    urlslist= []
+    urltobescraped="https://duckduckgo.com/?q="+query+"&t=h_&iax=images&ia=images"
+    driver.get(urltobescraped)
+
+    try:
+# Get scroll height
+        last_height = driver.execute_script("return document.body.scrollHeight")
+        while True:
+    # Scroll down to bottom
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    # Wait to load page
+            time.sleep(SCROLL_PAUSE_TIME)
+
+    # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+
+    except TimeoutException:
+        print("problem scrolling down")
+    try:
+#        images = driver.find_elements_by_tag_name('img')
+##        images = driver.find_elements_by_class_name("mimg");
+        images = driver.find_elements_by_class_name("tile--img__img");
+    except Exception:
+        print ("unable to find img tag")
+    for image in images:
+        url=image.get_attribute('src')
+        if "https://" in url:
+            urlslist.append(url)
+        else:
+            if DEBUG:
+                print ("unacceptable image url " +"n=" + str(suffix)+" "+ url  )
+    return(urlslist) 
+
+################################################
 
 ########## baidu.com
 ### http://image.baidu.com/search/index?tn=baiduimage&ps=1&ct=201326592&lm=-1&cl=2&nc=1&ie=utf-8&word=sturmovik&ie=utf-8&ie=utf-8
@@ -61,6 +100,47 @@ def downloadall(list):
 ########## picsearch.com
 ### https://www.picsearch.com/index.cgi?q=sturmovik
 
+def lookup1(driver, query,ntobefetched):
+    urlslist= []
+    urltobescraped="https://www.picsearch.com/index.cgi?q="+query
+    driver.get(urltobescraped)
+
+    try:
+
+# Get scroll height
+        last_height = driver.execute_script("return document.body.scrollHeight")
+
+        while True:
+    # Scroll down to bottom
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    # Wait to load page
+            time.sleep(SCROLL_PAUSE_TIME)
+
+    # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+
+    except TimeoutException:
+        print("problem scrolling down")
+    try:
+#        images = driver.find_elements_by_tag_name('img')
+        images = driver.find_elements_by_class_name("thumbnail");
+    except Exception:
+        print ("unable to find img tag")
+    for image in images:
+        url=image.get_attribute('src')
+        print (url) 
+        if "https://" in url:
+            urlslist.append(url)
+        else:
+            if DEBUG:
+                print ("unacceptable image url " +"n=" + str(suffix)+" "+ url  )
+    return(urlslist) 
+
+################################################
 
 
 
@@ -104,6 +184,8 @@ def lookup(driver, query,ntobefetched):
                 print ("unacceptable image url " +"n=" + str(suffix)+" "+ url  )
     return(urlslist) 
 
+################################################
+
 def getOptions(args=sys.argv[1:]):
     parser=argparse.ArgumentParser(description='a scraper to collect photo')
     parser.add_argument('searchstring', help="string to be searched") 
@@ -129,7 +211,8 @@ if __name__ == "__main__":
 
     driver = init_driver()
 
-    ul=lookup(driver, sestring, ntobefetched)
+#    ul=lookup(driver, sestring, ntobefetched)
+    ul=lookup1(driver, sestring, ntobefetched)
     downloadall(ul) 
 ##    for i in ul:
 ##        print(i)
