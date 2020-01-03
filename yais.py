@@ -47,6 +47,48 @@ def downloadall(list):
 ########## image.google.com section 
 
 #### https://www.google.com/search?q=sturmovik&tbm=isch&
+def lookup_google(driver, query,ntobefetched):
+    #### don't take in account the pushing of the button to obtain more results. 
+    urlslist= []
+    urltobescraped="https://www.google.com/search?q="+query+"&tbm=isch&"
+    driver.get(urltobescraped)
+
+    try:
+
+# Get scroll height
+        last_height = driver.execute_script("return document.body.scrollHeight")
+
+        while True:
+    # Scroll down to bottom
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    # Wait to load page
+            time.sleep(SCROLL_PAUSE_TIME)
+
+    # Calculate new scroll height and compare with last scroll height
+            new_height = driver.execute_script("return document.body.scrollHeight")
+            if new_height == last_height:
+                break
+            last_height = new_height
+
+    except TimeoutException:
+        print("problem scrolling down")
+    try:
+        images = driver.find_elements_by_tag_name('img')
+#        images = driver.find_elements_by_class_name("mimg");
+    except Exception:
+        print ("unable to find img tag")
+    for image in images:
+        url=image.get_attribute('src')
+        print (url) 
+#        if "https://" in url:
+        urlslist.append(url)
+#        else:
+#            if DEBUG:
+#                print ("unacceptable image url " +"n=" + str(suffix)+" "+ url  )
+    return(urlslist) 
+
+################################################
 
 ########## duckduckgo.com
 
@@ -91,11 +133,9 @@ def lookup0(driver, query,ntobefetched):
 
 ################################################
 
-########## baidu.com
-### http://image.baidu.com/search/index?tn=baiduimage&ps=1&ct=201326592&lm=-1&cl=2&nc=1&ie=utf-8&word=sturmovik&ie=utf-8&ie=utf-8
-
 ########## yandex.com
 ### https://yandex.com/images/search?text=sturmovik &
+# not yet implemented 
 
 ########## picsearch.com
 ### https://www.picsearch.com/index.cgi?q=sturmovik
@@ -142,7 +182,7 @@ def lookup1(driver, query,ntobefetched):
 
 ################################################
 
-
+#### BING
 
 ########## 
 def lookup(driver, query,ntobefetched):
@@ -213,6 +253,7 @@ if __name__ == "__main__":
 
 #    ul=lookup(driver, sestring, ntobefetched)
     ul=lookup1(driver, sestring, ntobefetched)
+
     downloadall(ul) 
 ##    for i in ul:
 ##        print(i)
