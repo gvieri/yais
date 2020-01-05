@@ -93,7 +93,7 @@ def lookup_google(driver, query,ntobefetched):
 ########## duckduckgo.com
 
 ### https://duckduckgo.com/?q=sturmovik+&t=h_&iax=images&ia=images
-def lookup0(driver, query,ntobefetched):
+def lookup_duckduckgo(driver, query,ntobefetched):
     urlslist= []
     urltobescraped="https://duckduckgo.com/?q="+query+"&t=h_&iax=images&ia=images"
     driver.get(urltobescraped)
@@ -140,7 +140,7 @@ def lookup0(driver, query,ntobefetched):
 ########## picsearch.com
 ### https://www.picsearch.com/index.cgi?q=sturmovik
 
-def lookup1(driver, query,ntobefetched):
+def lookup_picsearch(driver, query,ntobefetched):
     urlslist= []
     urltobescraped="https://www.picsearch.com/index.cgi?q="+query
     driver.get(urltobescraped)
@@ -172,7 +172,6 @@ def lookup1(driver, query,ntobefetched):
         print ("unable to find img tag")
     for image in images:
         url=image.get_attribute('src')
-        print (url) 
         if "https://" in url:
             urlslist.append(url)
         else:
@@ -185,7 +184,7 @@ def lookup1(driver, query,ntobefetched):
 #### BING
 
 ########## 
-def lookup(driver, query,ntobefetched):
+def lookup_bing(driver, query,ntobefetched):
     urlslist= []
     urltobescraped="https://www.bing.com/images/search?q="+query+"+&qs=n&form=QBILPG&sp=-1&pq="+query+"+&sc=1-13&ch="+str(ntobefetched)
     driver.get(urltobescraped)
@@ -251,8 +250,10 @@ if __name__ == "__main__":
 
     driver = init_driver()
 
-#    ul=lookup(driver, sestring, ntobefetched)
-    ul=lookup1(driver, sestring, ntobefetched)
+    ul=lookup_bing(driver, sestring, ntobefetched)
+    ul1=lookup_duckduckgo(driver, sestring, ntobefetched)
+    ul2=lookup_picsearch(driver, sestring, ntobefetched)
+    ul=ul+ul1+ul2
 
     downloadall(ul) 
 ##    for i in ul:
