@@ -1,5 +1,6 @@
 import time
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -14,9 +15,10 @@ SCROLL_PAUSE_TIME = 0.5
 nfetched=1000
 DEBUG=False
 urltobescraped=""
+options = Options()
 
 def init_driver():
-    driver = webdriver.Firefox()
+    driver = webdriver.Firefox(options=options)
     driver.wait = WebDriverWait(driver, 15)
     return driver
 
@@ -231,8 +233,9 @@ def getOptions(args=sys.argv[1:]):
     parser.add_argument('-n','--ntobefetched', help='try to fetch at least n images', type=int, default='1000')
     parser.add_argument('-t','--scroll-pause-time', help='time to wait between two simulated scroll\nWarning the default value is 0.5 but if you experience problems feel free to modify', default='0.5',dest='scrollpausetime' ) 
     parser.add_argument('-d','--debug',help='enables debug info', action='store_true' )
-    options=parser.parse_args(args)
-    return(options) 
+    parser.add_argument('-H','--headless',help='enables headless mode', action='store_true' )
+    opt=parser.parse_args(args)
+    return(opt) 
 
 
 if __name__ == "__main__":
@@ -242,12 +245,13 @@ if __name__ == "__main__":
         if DEBUG:
             print ( path + "already existing") 
 
-    options=getOptions() 
-    sestring=options.searchstring
-    ntobefetched=options.ntobefetched
-    DEBUG=options.debug
-    SCROLL_PAUSE_TIME=float(options.scrollpausetime)
-
+    opt=getOptions() 
+    sestring=opt.searchstring
+    ntobefetched=opt.ntobefetched
+    DEBUG=opt.debug
+    SCROLL_PAUSE_TIME=float(opt.scrollpausetime)
+    if opt.headless :
+        options.headless = True
     driver = init_driver()
 
     ul=lookup_bing(driver, sestring, ntobefetched)
